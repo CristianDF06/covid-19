@@ -7,33 +7,33 @@ window.onload = () => {
             let orden1 = JSON.parse(JSON.stringify(data));
 
             orden1.sort((a, b) => b.active - a.active);
-            orden1.length = 10;//indicamos la cantidad de elementos que queremos mostrar
-            console.log(orden1);
-            //console.log(orden1[0].country);//accedemos a la propiedad country
+            orden1.length = 10;
+            console.log(orden1)
 
-            let datos = orden1.map((dato) => {
-                return { label: dato.country, y: dato.deaths };
+            let activos = [];
+            let confirmados = [];
+            let recuperados = [];
+            let fallecidos = [];
+
+            orden1.forEach((objeto) => {
+                activos.push({ label: objeto.country, y: objeto.active });
+                confirmados.push({ label: objeto.country, y: objeto.confirmed });
+                recuperados.push({ label: objeto.country, y: objeto.recovered });
+                fallecidos.push({ label: objeto.country, y: objeto.deaths });
             });
-            //console.log(datos)
-            cargarGrafico(datos);
+            
+            cargarGrafico (activos, confirmados, recuperados, fallecidos)
 
-            let infoCovid = {//creamos un objeto para mostrar todos los objetos del array
-                nombre: orden1[0].country,
-                activos: orden1[0].active,
-                confirmados: orden1[0].confirmed,
-                muertes: orden1[0].deaths,
-                recuperados: orden1[0].recovered
-            }
-            //console.log(infoCovid)
         })
         .catch((error) => console.log(`ha ocurrido un error ${error}`));
 
-    const cargarGrafico = (infoCovid) => {
-        //console.log(datos)
+    const cargarGrafico = (activos, confirmados, recuperados, fallecidos) => {
+
+
         var chart = new CanvasJS.Chart("chartContainer", {
             animationEnabled: true,
             title: {
-                text: "Situación Covid a nivel mundial"
+                text: "Situación Covid-19 a nivel mundial"
             },
 
             toolTip: {
@@ -48,7 +48,7 @@ window.onload = () => {
                 name: "Casos activos",
                 legendText: "Casos activos",
                 showInLegend: true,
-                dataPoints: infoCovid//aca hay que incluir los datos para mostrarlo al grafico
+                dataPoints: activos,
             },
             {
                 type: "column",
@@ -56,7 +56,7 @@ window.onload = () => {
                 legendText: "Casos confirmados",
                 axisYType: "secondary",
                 showInLegend: true,
-                dataPoints: infoCovid
+                dataPoints: confirmados,
             },
             {
                 type: "column",
@@ -64,33 +64,18 @@ window.onload = () => {
                 legendText: "Recuperados",
                 axisYType: "secondary",
                 showInLegend: true,
-                dataPoints: [
-                    { label: "Saudi", y: 3.46 },
-                    { label: "Venezuela", y: 7.27 },
-                    { label: "Iran", y: 15.99 },
-                    { label: "Iraq", y: 4.45 },
-                    { label: "Kuwait", y: 2.92 },
-                    { label: "UAE", y: 3.1 },
-                    { label: "Chile", y: 10.1 }
-                ]
-            }, 
+                dataPoints: recuperados,
+            },
             {
                 type: "column",
                 name: "Fallecidos",
                 legendText: "Fallecidos",
                 axisYType: "secondary",
                 showInLegend: true,
-                dataPoints: [
-                    { label: "Saudi", y: 10.46 },
-                    { label: "Venezuela", y: 2.27 },
-                    { label: "Iran", y: 3.99 },
-                    { label: "Iraq", y: 4.45 },
-                    { label: "Kuwait", y: 2.92 },
-                    { label: "UAE", y: 3.1 },
-                    { label: "Chile", y: 24.1 }
-                ]
+                dataPoints: fallecidos,
             }]
         });
+
         chart.render();
 
         function toggleDataSeries(e) {
@@ -103,5 +88,4 @@ window.onload = () => {
             chart.render();
         }
     }
-
 }
